@@ -5,6 +5,7 @@ export class MessageEventEmitterClient extends EventEmitter {
     super();
     let wholeData = '';
     connection.on('data', (dataChunk) => {
+      console.log('Data received: ' + dataChunk);
       wholeData += dataChunk;
       let messageLimit = wholeData.indexOf('\n');
       while (messageLimit !== -1) {
