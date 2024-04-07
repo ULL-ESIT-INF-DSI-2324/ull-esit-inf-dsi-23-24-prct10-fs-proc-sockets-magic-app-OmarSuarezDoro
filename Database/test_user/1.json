@@ -1,0 +1,12 @@
+{
+  "id_": 1,
+  "name_": "Test Card",
+  "mana_cost_": 1,
+  "color_": "blue",
+  "type_": "creature",
+  "rarity_": "common",
+  "rules_text_": "Test Card",
+  "market_value_": 1,
+  "power_": 1,
+  "toughness_": 1
+}

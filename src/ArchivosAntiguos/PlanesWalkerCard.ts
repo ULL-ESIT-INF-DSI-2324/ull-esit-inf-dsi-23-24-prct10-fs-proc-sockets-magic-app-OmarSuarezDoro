@@ -32,6 +32,6 @@ export class PlanesWalkerCard extends Card {
    * This method return the string representation of the card
    */
   toString(): string {
-    return super.toString() + `Loyalty Marks: ${chalk.yellow(this.loyaltyMarks)}`;
+    return super.toString() + `\nLoyalty Marks: ${chalk.yellow(this.loyaltyMarks)}`;
   }
 }

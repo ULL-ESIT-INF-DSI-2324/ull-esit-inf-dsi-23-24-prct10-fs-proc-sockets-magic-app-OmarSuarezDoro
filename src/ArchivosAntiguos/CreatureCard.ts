@@ -43,8 +43,7 @@ export class CreatureCard extends Card {
   }
 
   toString(): string {
-    super.toString();
-    return `Power: ${chalk.yellow(this.power_)}, Toughness: ${chalk.yellow(this.toughness_)}`;
+    return super.toString() + `\nPower: ${chalk.yellow(this.power_)}, Toughness: ${chalk.yellow(this.toughness_)}`;
   }
 }
 
