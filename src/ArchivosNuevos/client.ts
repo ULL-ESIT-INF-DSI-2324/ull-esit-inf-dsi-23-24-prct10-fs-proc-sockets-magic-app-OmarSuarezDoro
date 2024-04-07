@@ -337,7 +337,7 @@ function initializeServer() {
   });
 
   client.getConnection.on('connect', () => {
-
+    // console.log(message);
     client.getConnection.write(JSON.stringify(message) + '\n');
   });
 
