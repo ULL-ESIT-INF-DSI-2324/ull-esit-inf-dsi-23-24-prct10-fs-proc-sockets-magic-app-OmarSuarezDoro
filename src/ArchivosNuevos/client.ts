@@ -1,4 +1,3 @@
-
 /**
  * Univeridad de La Laguna
  * Asignatura: Desarrollo de Sistemas Informáticos
@@ -6,8 +5,7 @@
  * Realizada por: Omar Suárez Doro
  * Correo: alu0101483474@ull.edu.es
  */
-
-import { EventEmitter } from 'events';
+import { MessageEventEmitterClient } from './EventEmitterClasses.js';
 import { COLOR, TYPE, RARITY } from '../ArchivosAntiguos/Card.js';
 import { CardCreator, CreatureCardCreator, PlanesWalkerCardCreator } from '../ArchivosAntiguos/CardsCreaters.js';
 import { hideBin } from 'yargs/helpers';
@@ -33,31 +31,11 @@ export type requestMessage = {
 let message: requestMessage;
 
 
+
 /**
- * This class is used to create a client that emits events when a message is received from the server
+ * @function main
+ * @description This function is the main function of the client
  */
-export class MessageEventEmitterClient extends EventEmitter {
-  constructor(private connection: net.Socket) {
-    super();
-    let wholeData = '';
-    connection.on('data', (dataChunk) => {
-      wholeData += dataChunk;
-      let messageLimit = wholeData.indexOf('\n');
-      while (messageLimit !== -1) {
-        const message = wholeData.substring(0, messageLimit);
-        wholeData = wholeData.substring(messageLimit + 1);
-        this.emit('response', JSON.parse(message));
-        messageLimit = wholeData.indexOf('\n');
-      }
-    });
-  }
-
-  get getConnection() {
-    return this.connection;
-  }
-}
-
-
 function main() {
   yargs(hideBin(process.argv))
     .command('add', 'Adds a card to the collection', {
@@ -295,11 +273,34 @@ function main() {
         path: '-1'
       }
     })
+    .command('show-unique', 'Show an unique card', {
+      user: {
+        description: 'username of the user',
+        type: 'string',
+        demandOption: true
+      },
+      id: {
+        description: 'id of the card',
+        type: 'number',
+        demandOption: true
+      }
+    }, (argv) => {
+      message = {
+        user: argv.user,
+        action: 'list-unique',
+        dataObj: {id: argv.id},
+        path: '-1'
+      }
+    })   
     .help()
     .argv;
   initializeServer();
 }
 
+/**
+ * @function initializeServer
+ * @description This function initializes the server
+ */
 function initializeServer() {
   let client = new MessageEventEmitterClient(net.connect({ port: 8080 }));
 
@@ -342,7 +343,7 @@ function initializeServer() {
   });
 
   client.getConnection.on('end', () => {
-    console.log('MIAU!, Server closed connection');
+    console.log('Server closed connection');
   });
 }
 
