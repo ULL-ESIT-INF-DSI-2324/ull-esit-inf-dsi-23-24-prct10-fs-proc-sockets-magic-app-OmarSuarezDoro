@@ -15,7 +15,6 @@ import chalk from 'chalk';
 
 /**
  * @global
- * @type {requestMessage}
  * @description This object is used to send the message to the server
  */
 export type requestMessage = {
