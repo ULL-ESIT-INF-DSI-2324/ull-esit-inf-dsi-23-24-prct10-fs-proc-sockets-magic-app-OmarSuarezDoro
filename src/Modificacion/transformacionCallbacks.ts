@@ -11,6 +11,7 @@ server.start(8080);
 
 // Handle request event (received the whole data from the client)
 server.on('request', (data: requestMessage, socket: net.Socket) => {
+  console.log('Request received!!');
   ServerFunctionality.checkUser(data.user, (err, _) => {
     if (err) {
       socket.write(err);
