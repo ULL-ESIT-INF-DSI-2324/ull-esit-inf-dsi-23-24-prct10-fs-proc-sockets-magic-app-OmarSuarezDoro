@@ -51,7 +51,7 @@ server.on('request', (data: requestMessage, socket: net.Socket) => {
         socket.write(err ?? data!);
         socket.end();
       });
-      
+      break;
     case 'delete':
       console.log('Delete action');
       ServerFunctionality.deleteFunctionality(data, (err, data) => {
