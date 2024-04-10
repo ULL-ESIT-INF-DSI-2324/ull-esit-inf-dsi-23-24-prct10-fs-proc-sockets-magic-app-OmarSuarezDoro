@@ -15,7 +15,6 @@ export class ServerFunctionality {
     fs.stat(`./Database/${dataInput.user.toLowerCase().replace(/\s/g, '_')}/${card.id}.json`, (err) => {
       if (!err) {
         callback(JSON.stringify({ statusCode: -2, dataObj: 'The file already exists!' }) + '\n', undefined);
-
         return;
       }
       fs.writeFile(`./Database/${dataInput.user.toLowerCase().replace(/\s/g, '_')}/${card.id}.json`, JSON.stringify(dataInput.dataObj, null, 2), (err) => {
@@ -120,12 +119,10 @@ export class ServerFunctionality {
               console.error(err);
             } else {
               let parsedCard: Card = this.parseCard(JSON.parse(data));
-              console.log('LLAMADA 1')
               callback(undefined, JSON.stringify({ statusCode: 200, user: JSON.parse(data).user, type: parsedCard.type, dataObj: parsedCard }) + '\n');
             }
           });
         }
-        console.log('LLAMADA 2')
         callback(undefined, JSON.stringify({ statusCode: 0 }) + '\n');
       }
     });

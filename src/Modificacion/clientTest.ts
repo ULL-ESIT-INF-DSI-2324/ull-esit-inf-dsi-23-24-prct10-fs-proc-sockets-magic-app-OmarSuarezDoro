@@ -328,24 +328,6 @@ function initializeServer() {
           console.log(data.dataObj);
         }
         break;
-      case 203:
-        for (let card of data.dataObj) {
-          let generator: CardCreator;
-          switch (card.type_) {
-            case 'creature':
-              generator = new CreatureCardCreator(card.id_, card.name_, card.mana_cost_, card.color_ as COLOR, card.type_ as TYPE, card.rarity_ as RARITY,
-                card.rules_text_, card.market_value_, card.power_, card.toughness_);
-              break;
-            case 'planeswalker':
-              generator = new PlanesWalkerCardCreator(card.id_, card.name_, card.mana_cost_, card.color_ as COLOR, card.type_ as TYPE, card.rarity_ as RARITY,
-                card.rules_text_, card.market_value_, card.loyalty_marks_);
-              break;
-            default:
-              generator = new CardCreator(card.id_, card.name_, card.mana_cost_, card.color_, card.type_, card.rarity_, card.rules_text_, card.market_value_);
-          }
-          console.log(generator.createCard().toString() + '\n');
-        }
-        break;
       case 201:
         console.log(chalk.green(`[✔] ${data.dataObj}`));
         break;

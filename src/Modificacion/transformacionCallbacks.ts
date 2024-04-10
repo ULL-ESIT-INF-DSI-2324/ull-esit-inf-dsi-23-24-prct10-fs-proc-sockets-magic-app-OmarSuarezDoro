@@ -1,6 +1,5 @@
 import net from 'net'
 import { CustomServer } from '../ArchivosNuevos/EventEmitterClasses.js';
-import { Card } from '../ArchivosAntiguos/Card.js';
 import { ServerFunctionality } from './ServerFunctionality.js'
 import {requestMessage } from '../ArchivosNuevos/customTypes.js'
 
@@ -21,7 +20,6 @@ server.on('request', (data: requestMessage, socket: net.Socket) => {
   });
   switch (data.action) {
     case 'list':
-      let cards : Card[] = [];
       ServerFunctionality.listFunctionality(data, (err, data) => {
         if (err) {
           socket.write(err);
@@ -29,12 +27,10 @@ server.on('request', (data: requestMessage, socket: net.Socket) => {
           return;
         } 
         let parsedData = JSON.parse(data!);
-        if (parsedData.statusCode !== 0) {
-          cards.push(JSON.parse(data!).dataObj);
+        if (parsedData.statusCode === 0) {
+          socket.write(JSON.stringify({statusCode: 0}) + '\n');
         }	else {
-          console.log(cards);
-          socket.write(JSON.stringify({statusCode: 203, dataObj: cards}) + '\n');
-          socket.end();
+          socket.write(JSON.stringify({statusCode: 200, dataObj: JSON.parse(data!).dataObj}) + '\n');
         }
       });
       break;

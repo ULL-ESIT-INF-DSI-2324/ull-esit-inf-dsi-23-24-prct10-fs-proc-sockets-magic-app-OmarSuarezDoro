@@ -12,7 +12,7 @@
     "test": "mocha",
     "coverage": "c8 npm test && c8 report --reporter=lcov",
     "doc": "typedoc",
-    "server": "tsc && node dist/Modificacion/transformacionCallbacks.js"
+    "server": "tsc && node dist/Modificacion/transformacionCallbacks.js &"
   },
   "devDependencies": {
     "@types/chai": "^4.3.12",
