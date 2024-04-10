@@ -295,7 +295,7 @@ Esta funcionalidad resulta ser un poco más compleja, pues se realiza:
       break;
 ```
 Esta funcionalidad cambia un poco. Como se puede apreciar se leen el contenido de los ficheros del directorio, y se emiten mensajes con la información de cada carta. En un primer momento, se pensó en enviar un array con todas las cartas, sin embargo, por como funciona el bucle de eventos de node, junto a la pila de llamadas, sucedía el caso de que se enviaba dicha estructura de datos vacía. Por otro lado, se pretendía acabar la conexión por parte del cliente haciendo uso de  `socket.end()`, sin embargo en ese caso solo enviaría la información de una carta. Por lo que debido a estas dificultades, se ha decidido enviar un statusCode de 0 en el mensaje para indicar al cliente el fin de la conexión. Esto no satisface el requisito que se exigía respecto al cierre de la conexión por parte del cliente, pero no he encontrado otra forma.
-
+list
 - Funcionalidad de listar una carta en específica
 
 ```ts
@@ -408,7 +408,58 @@ Estas líneas son las verdaderamente importantes. Aclarar que si se recibe un c�
 
 Finalmente se define el manejador del evento end para cuando se cierra la conexión.
 ## Modificación
+Para la modificación se ha solicitado que dos de las funciones de la práctica 9 se implementasen mediante el uso de funciones asíncronas que empleen callbacks. Para el estudio de la modificación se reimplementó el servidor de esta práctica para que hiciese uso pleno del patrón callback, obteniendo así un código más limpio. Los archivos del servidor nuevo, se encuentran en la carpeta de modificación. Se comentará por encima el nuevo enfoque que se le quiso dar:
 
+El servidor ahora al tener callbacks, se ha empleado el siguiente tipo de manejador:
+```ts
+  case 'add':
+    console.log('Add action');
+    ServerFunctionality.addFunctionality(data, (err, data) => {
+      socket.write(err ?? data!);
+      socket.end();
+    });
+  break;
+```
+
+El único manejador distinto resulta el del list, pues se emite el statusCode a 0 para indicar al cliente el final de la conexión.
+
+```ts
+  case 'list':
+    ServerFunctionality.listFunctionality(data, (err, data) => {
+      if (err) {
+        socket.write(err);
+        socket.end();
+        return;
+      } 
+      let parsedData = JSON.parse(data!);
+      if (parsedData.statusCode === 0) {
+        socket.write(JSON.stringify({statusCode: 0}) + '\n');
+      }	else {
+        socket.write(JSON.stringify({statusCode: 200, dataObj: JSON.parse(data!).dataObj}) + '\n');
+        }
+      });
+    break;
+```
+El código de las funcionalidades ubicadas en el archivo `ServerFunctionality.ts`, conincide con lo ya mostrado, sino que se ha implementado el patrón callback, un ejemplo de implementación es el siguiente:
+```ts
+  static addFunctionality(dataInput: requestMessage, callback: (error: string | undefined, data: string | undefined) => void) {
+    let card: Card = this.parseCard(dataInput.dataObj);
+    fs.stat(`./Database/${dataInput.user.toLowerCase().replace(/\s/g, '_')}/${card.id}.json`, (err) => {
+      if (!err) {
+        callback(JSON.stringify({ statusCode: -2, dataObj: 'The file already exists!' }) + '\n', undefined);
+        return;
+      }
+      fs.writeFile(`./Database/${dataInput.user.toLowerCase().replace(/\s/g, '_')}/${card.id}.json`, JSON.stringify(dataInput.dataObj, null, 2), (err) => {
+        if (err) {
+          callback(JSON.stringify({ statusCode: -1, dataObj: 'Error while writing the file' }) + '\n', undefined);
+        } else {
+          callback(undefined, JSON.stringify({ statusCode: 201, dataObj: 'The file was saved successfully!' }) + '\n');
+        }
+      });
+    });
+  }
+```
+Nótese el undefined para los errores, cuando se ha satisfecho la operación, y en el data para cuando suceden errores.
 
 
 # 4. Conclusiones
